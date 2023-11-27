@@ -1,7 +1,7 @@
 const express = require("express");
 const site = express();
-const fs = require("fs")
-;const port = 8443;
+const fs = require("fs");
+const port = 8443;
 
 site.get("/", (req, res) => {
   res.setHeader("Content-Type", "text/html");
@@ -13,4 +13,6 @@ site.get("/", (req, res) => {
   res.send(html);
 });
 
-site.listen(port);
+site.listen(port, () => {
+  console.log(`Listening on port ${port}`);
+});
