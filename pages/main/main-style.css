@@ -1,3 +1,4 @@
 h1 {color: white}
 body {background-color: black; display: flex; align-items: center;}
-.matrix-rain {display: flex; flex-direction: column; color: white; position: fixed; top: 0; left: 0; font-size: 40px;}
+#matrix-rain {position: fixed; top: 0; left: 0;}
+.matrix-rain-droplet {display: flex; flex-direction: column; color: white; position: fixed; top: 0; left: 0; font-size: 40px;}

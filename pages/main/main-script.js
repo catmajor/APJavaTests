@@ -27,12 +27,14 @@ function main () {
     }, 20)
   }
   function matrixRain() {
+    const dom = document.createElement("div");
+    dom.setAttribute("id", "matrix-rain");
+    document.body.appendChild(dom);
     const availableChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890123456789"
     function RainDrop() {
       if (this===window) throw "RainDrop must be called as a constructor";
       function Droplet() {
         if (this===window) throw "Droplet must be called as a constructor";
-        
       }
       let private = {};
       private.top = 0;
@@ -42,15 +44,16 @@ function main () {
       private.frameCount = 0;
       this.chars = new Array();
       this.dom = document.createElement("div");
-      document.body.appendChild(this.dom);
-      this.dom.classList.add("matrix-rain");
+      dom.appendChild(this.dom);
+      this.dom.classList.add("matrix-rain-droplet");
       this.dom.textContent = availableChars[Math.floor(Math.random()*availableChars.length)]
       this.setTop = (px) => {
         this.dom.style.top = `${px}px`;
         private.top = px;
       }
       this.destructor = () => {
-        this.body.removeChild(this.dom);
+        document.body.removeChild(this.dom);
+        rainDropArr.splice(rainDropArr.indexOf(this), 1);
       }
       this.callAction = () => {
         this.setTop(private.top+private.speed);
