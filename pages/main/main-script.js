@@ -31,35 +31,58 @@ function main () {
     dom.setAttribute("id", "matrix-rain");
     document.body.appendChild(dom);
     const availableChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890123456789"
-    function RainDrop() {
+    function RainDrop(_startFrame) {
+      rainDrop = this
       if (this===window) throw "RainDrop must be called as a constructor";
       function Droplet() {
         if (this===window) throw "Droplet must be called as a constructor";
+        private.dropletArr.push(this);
+        this.dom = document.createElement("div");
+        this.dom.classList.add("matrix-rain-droplet");
+        rainDrop.dom.appendChild(this.dom);
+        this.dom.style.top = private.top;
+        this.dom.textContent = rainDrop.text.textContent;
+        this.dom.style.fontSize = private.size;
+        this.dom.style.animationDuration = `${private.fadeSpeed}s`
       }
       let private = {};
-      private.top = 0;
+      private.top = -20;
       private.size = Math.floor(Math.random()*20+20)
       private.speed = Math.floor(Math.random()*10+10);
+      private.fadeSpeed = Math.floor(Math.random()*5+5)
+      private.framePrintInterval = Math.floor(private.size/private.speed);
+      console.log(private.size/private.speed)
       private.switchInterval = Math.floor(Math.random()*4+8);
-      private.frameCount = 0;
+      private.startFrame = _startFrame;
+      private.dropletArr = [];
       this.chars = new Array();
       this.dom = document.createElement("div");
+      this.text = document.createElement("p");
+      this.dom.appendChild(this.text);
+      this.dom.style.fontSize = `${private.size}px`
       dom.appendChild(this.dom);
-      this.dom.classList.add("matrix-rain-droplet");
-      this.dom.textContent = availableChars[Math.floor(Math.random()*availableChars.length)]
+      this.dom.classList.add("matrix-rain-rainDrop");
+      this.text.textContent = availableChars[Math.floor(Math.random()*availableChars.length)]
       this.setTop = (px) => {
         this.dom.style.top = `${px}px`;
         private.top = px;
       }
       this.destructor = () => {
-        document.body.removeChild(this.dom);
         rainDropArr.splice(rainDropArr.indexOf(this), 1);
+        setTimeout(() => {
+          dom.removeChild(this.dom);
+          console.log(rainDropArr)
+          rainDrop = null;
+        }, private.fadeSpeed*1000)
       }
-      this.callAction = () => {
+      this.callAction = (frame) => {
         this.setTop(private.top+private.speed);
-        private.frameCount++;
-        if (private.frameCount%private.switchInterval===0) {
-          this.dom.textContent = availableChars[Math.floor(Math.random()*availableChars.length)];
+        let frameSinceCreation = private.startFrame-frame;
+        if (frameSinceCreation%private.switchInterval===0) {
+          this.text.textContent = availableChars[Math.floor(Math.random()*availableChars.length)];
+        }
+        if ((frameSinceCreation)%private.framePrintInterval===0) {
+          new Droplet();
         }
         if (private.top + private.size >= window.innerHeight) {
           this.destructor();
@@ -67,11 +90,13 @@ function main () {
       }
     }
     const rainDropArr = [];
-    rainDropArr.push(new RainDrop());
+    rainDropArr.push(new RainDrop(0));
+    frame = 0;
     setInterval(() => {
       rainDropArr.forEach((drop) => {
-        drop.callAction();
+        drop.callAction(frame);
       })
+      frame++;
     }, 100)
   }
   playFancyText();
