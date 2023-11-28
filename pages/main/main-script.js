@@ -30,36 +30,57 @@ function main () {
     const dom = document.createElement("div");
     dom.setAttribute("id", "matrix-rain");
     document.body.appendChild(dom);
-    const availableChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890123456789"
+    const availableChars = "日ﾊﾐﾋｰｳｼﾅﾓﾆｻﾜﾂｵﾘｱﾎﾃﾏｹﾒｴｶｷﾑﾕﾗｾﾈｽﾀﾇﾍｦｲｸｺｿﾁﾄﾉﾌﾔﾖﾙﾚﾛﾝ012345789Z:・.\"=*+-<>¦çﾘｸ"
     function RainDrop(_startFrame) {
-      rainDrop = this
+      let rainDrop = this
       if (this===window) throw "RainDrop must be called as a constructor";
-      function Droplet() {
+      function Droplet(parent) {
         if (this===window) throw "Droplet must be called as a constructor";
         private.dropletArr.push(this);
         this.dom = document.createElement("div");
+        this.text = document.createElement("p");
         this.dom.classList.add("matrix-rain-droplet");
-        rainDrop.dom.appendChild(this.dom);
-        this.dom.style.top = private.top;
-        this.dom.textContent = rainDrop.text.textContent;
+        parent.dom.appendChild(this.dom);
+        this.dom.appendChild(this.text);
+        this.dom.style.top = `${private.top}px`;
+        this.dom.style.left = `${private.left}px`;
+        this.text.textContent = parent.text.textContent;
         this.dom.style.fontSize = private.size;
         this.dom.style.animationDuration = `${private.fadeSpeed}s`
+        this.potentialSwitchTimeout = null;
+        this.potentialSwitch = () => {
+          this.potentialSwitchTimeout = setTimeout(()=>{
+            if (Math.floor(Math.random()*4)===0) {
+              this.text.textContent = availableChars[Math.floor(Math.random()*availableChars.length)];
+            }
+            this.potentialSwitch();
+          }, 1000); 
+        }
+        this.potentialSwitch();
+        setTimeout(() => {
+          clearTimeout(this.potentialSwitchTimeout);
+          parent.dom.removeChild(this.dom);
+          this.text = null;
+          this.dom = null;
+        }, private.fadeSpeed*1000)
       }
       let private = {};
-      private.top = -20;
-      private.size = Math.floor(Math.random()*20+20)
+      private.size = Math.floor(Math.random()*20+20);
+      private.top = -2*private.size;
+      private.left = Math.floor(Math.random()*window.innerWidth);
       private.speed = Math.floor(Math.random()*10+10);
       private.fadeSpeed = Math.floor(Math.random()*5+5)
       private.framePrintInterval = Math.floor(private.size/private.speed);
-      console.log(private.size/private.speed)
       private.switchInterval = Math.floor(Math.random()*4+8);
       private.startFrame = _startFrame;
       private.dropletArr = [];
       this.chars = new Array();
       this.dom = document.createElement("div");
+      this.dom.style.top = `${private.top}px`;
+      this.dom.style.left = `${private.left}px`;
       this.text = document.createElement("p");
       this.dom.appendChild(this.text);
-      this.dom.style.fontSize = `${private.size}px`
+      this.dom.style.fontSize = `${private.size}px`;
       dom.appendChild(this.dom);
       this.dom.classList.add("matrix-rain-rainDrop");
       this.text.textContent = availableChars[Math.floor(Math.random()*availableChars.length)]
@@ -71,18 +92,18 @@ function main () {
         rainDropArr.splice(rainDropArr.indexOf(this), 1);
         setTimeout(() => {
           dom.removeChild(this.dom);
-          console.log(rainDropArr)
           rainDrop = null;
+          this.text = null;
+          this.dom = null;
+          private.dropletArr = null;
         }, private.fadeSpeed*1000)
       }
       this.callAction = (frame) => {
         this.setTop(private.top+private.speed);
         let frameSinceCreation = private.startFrame-frame;
-        if (frameSinceCreation%private.switchInterval===0) {
-          this.text.textContent = availableChars[Math.floor(Math.random()*availableChars.length)];
-        }
         if ((frameSinceCreation)%private.framePrintInterval===0) {
-          new Droplet();
+          this.text.textContent = availableChars[Math.floor(Math.random()*availableChars.length)];
+          private.dropletArr.push(new Droplet(this));
         }
         if (private.top + private.size >= window.innerHeight) {
           this.destructor();
@@ -90,12 +111,14 @@ function main () {
       }
     }
     const rainDropArr = [];
-    rainDropArr.push(new RainDrop(0));
     frame = 0;
     setInterval(() => {
       rainDropArr.forEach((drop) => {
         drop.callAction(frame);
       })
+      if (Math.floor(Math.random()*(rainDropArr.length))===0) {
+        rainDropArr.push(new RainDrop(frame))
+      }
       frame++;
     }, 100)
   }
