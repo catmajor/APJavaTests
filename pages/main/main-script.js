@@ -2,21 +2,27 @@ function main () {
   function playFancyText() {
     const availableChars = "!\"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~";
     function cycleString() {
-      cycleTextArr = cycleTextArr.map(() => availableChars[Math.floor(Math.random()*availableChars.length)])
+      cycleTextArr.forEach((ele) => ele.textContent = availableChars[Math.floor(Math.random()*availableChars.length)])
     }
     const finalText = "APJava Tests by Nikita";
     const fancyText = document.getElementById("fancy-text");
-    let cycleTextArr = new Array(finalText.length).fill('-');
-    fancyText.textContent = cycleTextArr.join("");
+    let tempTextArr = new Array(finalText.length).fill('-');
+    fancyText.innerHTML = tempTextArr.reduce((acc, ele, ind) => {
+      return acc += `<span id="fancy-text-${ind}">-</span>`;
+    }, "");
+    tempTextArr = document.querySelectorAll("#fancy-text>span");
+    let cycleTextArr = new Array(finalText.length);
+    tempTextArr.forEach((ele, ind) => cycleTextArr[ind] = ele);
     let startInd = 0;
     let cycleCount = 0;
-    setInterval(() => {
+    const cycleInterval = setInterval(() => {
       cycleCount++;
       cycleString();
-      fancyText.textContent = finalText.substring(0, startInd) + cycleTextArr.join("")
       if (cycleCount%10===0) {
+        cycleTextArr[0].textContent = finalText[startInd];
         startInd++;
         cycleTextArr.shift();
+        if (startInd > finalText.length - 1) clearInterval(cycleInterval);
       }
     }, 20)
   }
@@ -50,7 +56,7 @@ function main () {
         this.setTop(private.top+private.speed);
         private.frameCount++;
         if (private.frameCount%private.switchInterval===0) {
-          this.dom.textContent = availableChars[Math.floor(Math.random()*availableChars.length)]
+          this.dom.textContent = availableChars[Math.floor(Math.random()*availableChars.length)];
         }
         if (private.top + private.size >= window.innerHeight) {
           this.destructor();
