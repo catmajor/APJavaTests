@@ -1,7 +1,7 @@
 h1 {color: white}
 body {background-color: black; display: flex; align-items: center;}
 #matrix-rain {position: fixed; top: 0; left: 0;}
-.matrix-rain-rainDrop {display: flex; flex-direction: column; color: white; position: fixed; top: 0; left: 0; font-size: 40px;}
+.matrix-rain-rainDrop {display: flex; flex-direction: column; color: white; position: fixed; top: 0; left: 0; font-size: 40px; user-select: none}
 .matrix-rain-rainDrop p {transform: scale(-1, -1)}
 .matrix-rain-droplet {display: flex; flex-direction: column; color: white; position: fixed; top: 0; left: 0; font-size: 40px; animation-name: droplet-fade; animation-duration: 6s; animation-iteration-count: 1; animation-fill-mode: forwards; text-shadow: #00ff00 1px 1px 4px, #00ff00 -1px -1px 4px}
 .matrix-rain-droplet p {transform: scale(-1, -1)}

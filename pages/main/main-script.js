@@ -65,10 +65,19 @@ function main () {
         this.potentialSwitch();
         setTimeout(() => {
           clearTimeout(this.potentialSwitchTimeout);
+          this.destructor();
+        }, private.fadeSpeed*1000);
+        let destructorCalled = false;
+        this.destructor = () => {
+          if (destructorCalled) return;
+          destructorCalled = true;
+          private.dropletArr.splice(private.dropletArr.indexOf(this), 1);
+          console.log(this)
           parent.dom.removeChild(this.dom);
           this.text = null;
           this.dom = null;
-        }, private.fadeSpeed*1000)
+          clearTimeout(this.potentialSwitchTimeout);
+        }
       }
       let private = {};
       private.size = Math.floor(Math.random()*20+40);
@@ -96,17 +105,28 @@ function main () {
         this.dom.style.top = `${px}px`;
         private.top = px;
       }
-      this.destructor = () => {
+      let destructorCalled = false
+      this.destructor = (frame = 0, safeClear = false) => {
+        if (destructorCalled) return;
+        destructorCalled = true;
         rainDropArr.splice(rainDropArr.indexOf(this), 1);
+        clearingArr.push(this)
+        if (safeClear&&rainDropArr.length === 0) {
+          rainDropArr.push(new RainDrop(frame))
+        }
         this.dom.removeChild(this.text);
         setTimeout(() => {
           dom.removeChild(this.dom);
-          rainDrop = null;
           this.text = null;
           this.dom = null;
           private = null;
           this.chars = null
+          clearingArr.splice(clearingArr.indexOf(this), 1);
         }, private.fadeSpeed*1000)
+      }
+      this.clearDroplets = () => {
+        private.dropletArr?.forEach(ele => ele.destructor());
+        console.log("cleared")
       }
       this.callAction = async (frame) => {
         try {
@@ -117,7 +137,7 @@ function main () {
             private.dropletArr.push(new Droplet(this));
           }
           if (private.top >= private.maxFall) {
-            this.destructor();
+            this.destructor(frame, true);
           }
         } catch (e) {
           throw e;
@@ -126,22 +146,31 @@ function main () {
       }
     }
     const rainDropArr = [];
+    const clearingArr = [];
     frame = 0;
     rainDropArr.push(new RainDrop(frame))
-    rainDropArr.push(new RainDrop(frame))
-    rainDropArr.push(new RainDrop(frame))
-    rainDropArr.push(new RainDrop(frame))
-    let calculatedLengthChance = ((rainDropArr.length+1)*0.3)**2
+    let calculatedLengthChance = (10+Math.E**(-(rainDropArr.length-4)))
     setInterval(() => {
       rainDropArr.forEach(async (drop) => {
         drop.callAction(frame);
       })
       if (Math.floor(Math.random()*calculatedLengthChance)===0) {
         rainDropArr.push(new RainDrop(frame))
-        calculatedLengthChance = ((rainDropArr.length+1)*0.3)**2
+        calculatedLengthChance = (10+Math.E**(-(rainDropArr.length-4)))
       }
       frame++;
-    }, 100)
+    }, 100);
+    window.addEventListener("visibilitychange", () => {
+      frame = 0;
+      rainDropArr.forEach(ele => {
+        ele.clearDroplets();
+        ele.destructor();
+      });
+      clearingArr.forEach(ele => {
+        ele.clearDroplets();
+        ele.destructor();
+      });
+    });
   }
   playFancyText();
   matrixRain();
