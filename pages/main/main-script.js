@@ -12,7 +12,8 @@ function main () {
                        '&nbsp;', 
                        '\'', '2', '3', '-', '\'', '2', '4', 
                        '&nbsp;', 
-                       'T', 'A', 's'];
+                       'T', 'A', 's'
+                      ];
     const fancyText = document.getElementById("fancy-text");
     let tempTextArr = new Array(finalText.length).fill('-');
     fancyText.innerHTML = tempTextArr.reduce((acc, ele, ind) => {
