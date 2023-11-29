@@ -4,7 +4,15 @@ function main () {
     function cycleString() {
       cycleTextArr.forEach((ele) => ele.textContent = availableChars[Math.floor(Math.random()*availableChars.length)])
     }
-    const finalText = "APJava Tests by Nikita";
+    const finalText = ['A', 'P', 'J', 'a', 'v', 'a', 
+                       '&nbsp;', 
+                       'T', 'e', 's', 't', 's', 
+                       '&nbsp;', 
+                       'b', 'y', 
+                       '&nbsp;', 
+                       '\'', '2', '3', '-', '\'', '2', '4', 
+                       '&nbsp;', 
+                       'T', 'A', 's'];
     const fancyText = document.getElementById("fancy-text");
     let tempTextArr = new Array(finalText.length).fill('-');
     fancyText.innerHTML = tempTextArr.reduce((acc, ele, ind) => {
@@ -18,8 +26,8 @@ function main () {
     const cycleInterval = setInterval(() => {
       cycleCount++;
       cycleString();
-      if (cycleCount%10===0) {
-        cycleTextArr[0].textContent = finalText[startInd];
+      if (cycleCount%5===0) {
+        cycleTextArr[0].innerHTML = finalText[startInd];
         startInd++;
         cycleTextArr.shift();
         if (startInd > finalText.length - 1) clearInterval(cycleInterval);
@@ -31,7 +39,7 @@ function main () {
     dom.setAttribute("id", "matrix-rain");
     document.body.appendChild(dom);
     const availableChars = "日ﾊﾐﾋｰｳｼﾅﾓﾆｻﾜﾂｵﾘｱﾎﾃﾏｹﾒｴｶｷﾑﾕﾗｾﾈｽﾀﾇﾍｦｲｸｺｿﾁﾄﾉﾌﾔﾖﾙﾚﾛﾝ012345789Z:・.\"=*+-<>¦çﾘｸ"
-    function RainDrop(_startFrame) {
+    function RainDrop(_startFrame, color = null) {
       if (this===window) throw "RainDrop must be called as a constructor";
       function Droplet(parent) {
         if (this===window) throw "Droplet must be called as a constructor";
@@ -54,13 +62,13 @@ function main () {
               this.text.textContent = availableChars[Math.floor(Math.random()*availableChars.length)];
             }
             this.switchesTried++;
-            if (this.switchesTried = 3) {
+            if (this.switchesTried = 8) {
               clearTimeout(this.potentialSwitchTimeout);
               return
             };
             this.potentialSwitch();
             return;
-          }, 2000); 
+          }, 750); 
         }
         this.potentialSwitch();
         setTimeout(() => {
@@ -80,10 +88,10 @@ function main () {
         }
       }
       let private = {};
-      private.size = Math.floor(Math.random()*20+40);
+      private.size = Math.floor(Math.random()*25+45);
       private.top = -2*private.size;
       private.left = Math.floor(Math.random()*window.innerWidth);
-      private.speed = Math.floor(Math.random()*23+7);
+      private.speed = Math.floor(Math.random()*15+10);
       private.fadeSpeed = Math.floor(Math.random()*10+10)
       private.framePrintInterval = Math.floor(private.size/private.speed);
       if (private.framePrintInterval===0) private.framePrintInterval = 1;
@@ -92,6 +100,10 @@ function main () {
       private.dropletArr = [];
       this.chars = new Array();
       this.dom = document.createElement("div");
+      if (color!=null) this.dom.style.setProperty("--final-color", color);
+      else {
+        if (Math.floor(Math.random()*8)===0) this.dom.style.setProperty("--final-color", "#ff0000");
+      }
       this.dom.style.top = `${private.top}px`;
       this.dom.style.left = `${private.left}px`;
       this.text = document.createElement("p");
@@ -156,10 +168,10 @@ function main () {
       })
       if (Math.floor(Math.random()*calculatedLengthChance)===0) {
         rainDropArr.push(new RainDrop(frame))
-        calculatedLengthChance = (10+Math.E**(-(rainDropArr.length-4)))
+        calculatedLengthChance = (10+Math.E**(-(rainDropArr.length+clearingArr.length-4)))
       }
       frame++;
-    }, 100);
+    }, 75);
     window.addEventListener("visibilitychange", () => {
       frame = 0;
       rainDropArr.forEach(ele => {

@@ -1,12 +1,27 @@
-h1 {color: white}
-body {background-color: black; display: flex; align-items: center;}
-#matrix-rain {position: fixed; top: 0; left: 0;}
-.matrix-rain-rainDrop {display: flex; flex-direction: column; color: white; position: fixed; top: 0; left: 0; font-size: 40px; user-select: none}
+:root {
+  --main-color: #00ff00
+}
+h1 {color: white; background: rgba(0, 0, 0, 0.8); border: white solid 1px; width: 50%; font-family: 'Roboto Mono'; display: flex; align-items: center; justify-content: center; height: 10%}
+main {width: 50%; color: white; background: rgba(0, 0, 0, 0.8); border: white solid 1px;; height: 10%; display: flex; align-items: center; justify-content:center}
+.main-select {flex-grow: 1; font-family: 'Ubuntu'; margin: 10px; border: white solid 1px; position: relative;}
+.main-select>p {text-align: center; width: 100%;}
+.main-select ul {display: none; position: absolute; list-style-type: none; border: white solid 1px; margin: 0; padding: 0; width: 100%; background: black}
+.main-select li {margin: 0; list-style-type: none; width: 100%; padding: 10px 0 10px 0; text-align: center;}
+.main-select li:hover {background: #333}
+.main-select li a {text-decoration: none; color: white}
+.main-select:hover {background-color: #333}
+.main-select:hover ul {display: block}
+body {background-color: black;}
+content {display: flex; align-items: center; justify-content: center; flex-direction: column; width: 100%; height: 100%}
+footer {position: fixed; color: white; font-family: 'Ubuntu'; bottom: 0; right: 0; font-size: 20}
+footer a {color: white;}
+#matrix-rain {position: fixed; top: 0; left: 0; z-index: -99; font-family: 'Roboto Mono';}
+.matrix-rain-rainDrop {--final-color: var(--main-color); display: flex; flex-direction: column; color: white; position: fixed; top: 0; left: 0; font-size: 40px; user-select: none}
 .matrix-rain-rainDrop p {transform: scale(-1, -1)}
-.matrix-rain-droplet {display: flex; flex-direction: column; color: white; position: fixed; top: 0; left: 0; font-size: 40px; animation-name: droplet-fade; animation-duration: 6s; animation-iteration-count: 1; animation-fill-mode: forwards; text-shadow: #00ff00 1px 1px 4px, #00ff00 -1px -1px 4px}
+.matrix-rain-droplet {display: flex; flex-direction: column; color: white; position: fixed; top: 0; left: 0; font-size: 40px; animation-name: droplet-fade; animation-duration: 6s; animation-iteration-count: 1; animation-fill-mode: forwards; text-shadow: var(--final-color) 1px 1px 4px, var(--final-color) -1px -1px 4px}
 .matrix-rain-droplet p {transform: scale(-1, -1)}
 @keyframes droplet-fade {
   0% {color: white; opacity: 1;}
-  10% {color: #00ff00; opacity: 1;}
+  10% {color: var(--final-color); opacity: 1;}
   100% {opacity: 0;}
 }
