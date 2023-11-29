@@ -36,6 +36,7 @@ function main () {
   }
   function matrixRain() {
     const dom = document.createElement("div");
+    let redOnScreen = false;
     dom.setAttribute("id", "matrix-rain");
     document.body.appendChild(dom);
     const availableChars = "日ﾊﾐﾋｰｳｼﾅﾓﾆｻﾜﾂｵﾘｱﾎﾃﾏｹﾒｴｶｷﾑﾕﾗｾﾈｽﾀﾇﾍｦｲｸｺｿﾁﾄﾉﾌﾔﾖﾙﾚﾛﾝ012345789Z:・.\"=*+-<>¦çﾘｸ"
@@ -91,7 +92,7 @@ function main () {
       private.size = Math.floor(Math.random()*25+45);
       private.top = -2*private.size;
       private.left = Math.floor(Math.random()*window.innerWidth);
-      private.speed = Math.floor(Math.random()*15+10);
+      private.speed = Math.floor(Math.random()*15+20);
       private.fadeSpeed = Math.floor(Math.random()*10+10)
       private.framePrintInterval = Math.floor(private.size/private.speed);
       if (private.framePrintInterval===0) private.framePrintInterval = 1;
@@ -102,7 +103,11 @@ function main () {
       this.dom = document.createElement("div");
       if (color!=null) this.dom.style.setProperty("--final-color", color);
       else {
-        if (Math.floor(Math.random()*8)===0) this.dom.style.setProperty("--final-color", "#ff0000");
+        if (!redOnScreen&&Math.floor(Math.random()*4)===0) {
+          this.dom.style.setProperty("--final-color", "#ff0000");
+          redOnScreen = true;
+          this.redColor = true;
+        };
       }
       this.dom.style.top = `${private.top}px`;
       this.dom.style.left = `${private.left}px`;
@@ -132,7 +137,8 @@ function main () {
           this.text = null;
           this.dom = null;
           private = null;
-          this.chars = null
+          this.chars = null;
+          if (this.redColor) redOnScreen = false;
           clearingArr.splice(clearingArr.indexOf(this), 1);
         }, private.fadeSpeed*1000)
       }
@@ -171,7 +177,7 @@ function main () {
         calculatedLengthChance = (10+Math.E**(-(rainDropArr.length+clearingArr.length-4)))
       }
       frame++;
-    }, 75);
+    }, 100);
     window.addEventListener("visibilitychange", () => {
       frame = 0;
       rainDropArr.forEach(ele => {
