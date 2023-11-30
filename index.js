@@ -17,7 +17,6 @@ site.get("/", (req, res) => {
   const html = getPage("main");
   res.send(html);
 });
-
 site.get("/api", (req, res) => {
   res.setHeader("Content-Type", "text/html");
   res.send("future api endpoint");

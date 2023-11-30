@@ -35,9 +35,9 @@ function main() {
     this.setState = (state) => {
       this.state = state;
       if (state) {
-        this.dom.style.backgroundColor = "green";
+        this.dom.style.backgroundColor = "#00ff00";
       } else {
-        this.dom.style.backgroundColor = "red";
+        this.dom.style.backgroundColor = "#ff0000";
       }
     }
   }

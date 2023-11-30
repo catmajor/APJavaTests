@@ -33,7 +33,7 @@ function main () {
         cycleTextArr.shift();
         if (startInd > finalText.length - 1) clearInterval(cycleInterval);
       }
-    }, 20)
+    }, 20);
   }
   function matrixRain() {
     const dom = document.createElement("div");
@@ -45,7 +45,8 @@ function main () {
       if (this===window) throw "RainDrop must be called as a constructor";
       function Droplet(parent) {
         if (this===window) throw "Droplet must be called as a constructor";
-        private.dropletArr.push(this);
+        private.dropletArr[private.newestDropletIndex] = this;
+        this.index = private.newestDropletIndex++;
         this.dom = document.createElement("div");
         this.text = document.createElement("p");
         this.dom.classList.add("matrix-rain-droplet");
@@ -81,8 +82,7 @@ function main () {
         this.destructor = () => {
           if (destructorCalled) return;
           destructorCalled = true;
-          private.dropletArr.splice(private.dropletArr.indexOf(this), 1);
-          console.log(this)
+          private.dropletArr[this.index] = null;
           parent.dom.removeChild(this.dom);
           this.text = null;
           this.dom = null;
@@ -99,7 +99,6 @@ function main () {
       if (private.framePrintInterval===0) private.framePrintInterval = 1;
       private.switchInterval = Math.floor(Math.random()*4+8);
       private.startFrame = _startFrame;
-      private.dropletArr = [];
       this.chars = new Array();
       this.dom = document.createElement("div");
       if (color!=null) this.dom.style.setProperty("--final-color", color);
@@ -118,7 +117,11 @@ function main () {
       dom.appendChild(this.dom);
       this.dom.classList.add("matrix-rain-rainDrop");
       this.text.textContent = availableChars[Math.floor(Math.random()*availableChars.length)]
-      private.maxFall = (Math.floor(Math.random()*1.5)===0?window.innerHeight-Math.floor(Math.random()*window.innerHeight/2):window.innerHeight)-private.size;;
+      private.maxFall = (Math.floor(Math.random()*1.5)===0?window.innerHeight-Math.floor(Math.random()*window.innerHeight/2):window.innerHeight)-private.size;
+      private.maxDropletCount = Math.ceil(private.maxFall / (private.framePrintInterval * private.speed));
+      private.dropletArr = new Array(private.maxDropletCount);
+      console.log(private.maxDropletCount)
+      private.newestDropletIndex = 0;
       this.setTop = (px) => {
         this.dom.style.top = `${px}px`;
         private.top = px;
@@ -145,7 +148,6 @@ function main () {
       }
       this.clearDroplets = () => {
         private.dropletArr?.forEach(ele => ele.destructor());
-        console.log("cleared")
       }
       this.callAction = async (frame) => {
         try {
@@ -167,7 +169,7 @@ function main () {
     const rainDropArr = [];
     const clearingArr = [];
     frame = 0;
-    rainDropArr.push(new RainDrop(frame))
+    rainDropArr.push(new RainDrop(frame));
     let calculatedLengthChance = (10+Math.E**(-(rainDropArr.length-4)))
     setInterval(() => {
       rainDropArr.forEach(async (drop) => {
@@ -189,10 +191,12 @@ function main () {
         ele.clearDroplets();
         ele.destructor();
       });
+      rainDropArr = [];
+      clearingArr = [];
     });
   }
   playFancyText();
-  matrixRain();
+  setTimeout(matrixRain ,2000);
 }
 
 main()
