@@ -1,6 +1,17 @@
-body {background: black; padding: 0; margin: 0}
-#sidebar {height: 100%; width: 125px}
+:root {
+  --highlight-color: white;
+  --test-output-result-color: #00ff00;
+}
+
+body {background: black; padding: 0; margin: 0; display: flex;}
+#sidebar {height: calc(100% - 2px); width: 140px; display: flex; align-items: center; justify-content: center; border: var(--highlight-color) solid 1px;}
 #sidebar ul {list-style-type: none; padding: 0;}
 #sidebar ul li {display: flex; list-style-type: none; align-items: center}
-#sidebar ul li p {color: white; width: 100px; font-family: 'Ubuntu'}
-.checkbox {width: 20px; height: 20px; background-color: red; margin-left: 5px; border: white solid 1px;}
+#sidebar ul li p {color: white; width: 100px; font-family: 'Ubuntu'; margin-left: 5px; margin-right: 5px}
+.checkbox {width: 20px; height: 20px; background-color: red; margin-left: 5px; margin-right: 5px; border: white solid 1px;}
+
+#code-area-container {height: 100%; width: calc(100% - 184px)}
+#code-area {height: calc(100% - 40px); margin: 20px;}
+#tabs {overflow-x: scroll; position: relative; white-space: nowrap}
+.tab {height: 30px; background: rgba(0, 0, 0, 0.8); width: 150px; border: var(--highlight-color) solid 1px; display: inline-block; vertical-align: bottom}
+#test-output-container {width: 40px; height: calc(100% - 2px); border: var(--highlight-color) solid 1px;}
