@@ -28,6 +28,15 @@ site.get("/tests", (req, res) => {
   res.send(html);
 })
 
+site.get("/javascript/:file", (req, res) => {
+  res.setHeader("Content-Type", "text/javascript");
+  if (!fs.existsSync(`./javascript/${req.params.file}`)) {
+    res.send("No such js file found");
+  }
+  const js = fs.readFileSync(`./javascript/${req.params.file}`, "utf-8");
+  res.send(js);
+});
+
 site.listen(port, () => {
   console.log(`Listening on port ${port}`);
 });
