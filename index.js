@@ -30,10 +30,11 @@ site.get("/tests", (req, res) => {
 
 site.get("/javascript/:file", (req, res) => {
   res.setHeader("Content-Type", "text/javascript");
-  if (!fs.existsSync(`./javascript/${req.params.file}`)) {
+  if (!fs.existsSync(`./pages/javascript/${req.params.file}`)) {
     res.send("No such js file found");
+    return;
   }
-  const js = fs.readFileSync(`./javascript/${req.params.file}`, "utf-8");
+  const js = fs.readFileSync(`./pages/javascript/${req.params.file}`, "utf-8");
   res.send(js);
 });
 
