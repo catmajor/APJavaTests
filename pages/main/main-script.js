@@ -37,6 +37,8 @@ function main () {
   }
   function matrixRain() {
     const dom = document.createElement("div");
+    let dropletCount = 0;
+    let clearingCount = 0;
     let redOnScreen = false;
     dom.setAttribute("id", "matrix-rain");
     document.body.appendChild(dom);
@@ -89,7 +91,9 @@ function main () {
           clearTimeout(this.potentialSwitchTimeout);
         }
       }
+      dropletCount++;
       let private = {};
+      private.index = rainDropArr.add(this);
       private.size = Math.floor(Math.random()*25+45);
       private.top = -2*private.size;
       private.left = Math.floor(Math.random()*window.innerWidth);
@@ -103,7 +107,7 @@ function main () {
       this.dom = document.createElement("div");
       if (color!=null) this.dom.style.setProperty("--final-color", color);
       else {
-        if (!redOnScreen&&Math.floor(Math.random()*4)===0) {
+        if (!redOnScreen&&Math.floor(Math.random()*20)===0) {
           this.dom.style.setProperty("--final-color", "#ff0000");
           redOnScreen = true;
           this.redColor = true;
@@ -120,30 +124,33 @@ function main () {
       private.maxFall = (Math.floor(Math.random()*1.5)===0?window.innerHeight-Math.floor(Math.random()*window.innerHeight/2):window.innerHeight)-private.size;
       private.maxDropletCount = Math.ceil(private.maxFall / (private.framePrintInterval * private.speed));
       private.dropletArr = new Array(private.maxDropletCount);
-      console.log(private.maxDropletCount)
       private.newestDropletIndex = 0;
       this.setTop = (px) => {
         this.dom.style.top = `${px}px`;
         private.top = px;
       }
-      let destructorCalled = false
+      let destructorCalled = false;
+      let clearingIndex = null;
       this.destructor = (frame = 0, safeClear = false) => {
         if (destructorCalled) return;
+        dropletCount--;
+        clearingCount++;
         destructorCalled = true;
-        rainDropArr.splice(rainDropArr.indexOf(this), 1);
-        clearingArr.push(this)
-        if (safeClear&&rainDropArr.length === 0) {
-          rainDropArr.push(new RainDrop(frame))
+        rainDropArr.array[private.index] = null;
+        clearingIndex = clearingArr.add(this);
+        if (safeClear&&dropletCount === 0) {
+          new RainDrop(frame);
         }
         this.dom.removeChild(this.text);
+        if (this.redColor) redOnScreen = false;
         setTimeout(() => {
+          clearingCount--;
           dom.removeChild(this.dom);
           this.text = null;
           this.dom = null;
           private = null;
           this.chars = null;
-          if (this.redColor) redOnScreen = false;
-          clearingArr.splice(clearingArr.indexOf(this), 1);
+          clearingArr.array[clearingIndex] = null;
         }, private.fadeSpeed*1000)
       }
       this.clearDroplets = () => {
@@ -166,33 +173,61 @@ function main () {
         
       }
     }
-    const rainDropArr = [];
-    const clearingArr = [];
+    function ArrayManager() {
+      this.array = new Array(0);
+      this.add = (item) => {
+        let index = 0;
+        for (const ele of this.array) {
+          if (ele===null) {
+            this.array[index] = item;
+            return index;
+          }
+          index++;
+        }
+        this.array.push(item);
+        return this.array.length - 1;
+      }
+      this.clear = () => {
+        for (let i = 0; i < this.array.length; i++) {
+          this.array[i] = null;
+        }
+      }
+    }
+    const rainDropArr = new ArrayManager();
+    const clearingArr = new ArrayManager();
     frame = 0;
-    rainDropArr.push(new RainDrop(frame));
-    let calculatedLengthChance = (10+Math.E**(-(rainDropArr.length-4)))
+    new RainDrop(frame, "#00ffff");
+    let calculatedLengthChance = (3+Math.E**4)
     setInterval(() => {
-      rainDropArr.forEach(async (drop) => {
-        drop.callAction(frame);
+      rainDropArr.array.forEach(async (drop) => {
+        if (drop) drop.callAction(frame);
       })
       if (Math.floor(Math.random()*calculatedLengthChance)===0) {
-        rainDropArr.push(new RainDrop(frame))
-        calculatedLengthChance = (10+Math.E**(-(rainDropArr.length+clearingArr.length-4)))
+        new RainDrop(frame);
+        console.log(rainDropArr.array.length);
+        console.log(clearingArr.array.length);
+        calculatedLengthChance = (3+Math.E**(-2*(dropletCount+clearingCount-4)))
       }
       frame++;
     }, 100);
     window.addEventListener("visibilitychange", () => {
       frame = 0;
-      rainDropArr.forEach(ele => {
-        ele.clearDroplets();
-        ele.destructor();
+      rainDropArr.array.forEach(ele => {
+        if (ele) {
+          ele.clearDroplets();
+          ele.destructor();
+        }
       });
-      clearingArr.forEach(ele => {
-        ele.clearDroplets();
-        ele.destructor();
+      clearingArr.array.forEach(ele => {
+        if (ele) {
+          ele.clearDroplets();
+          ele.destructor();
+        }
       });
-      rainDropArr = [];
-      clearingArr = [];
+      rainDropArr.clear();
+      dropletCount = 0;
+      clearingCount = 0;
+      clearingArr.clear();
     });
   }
   playFancyText();
