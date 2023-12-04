@@ -1,6 +1,8 @@
 :root {
   --highlight-color: white;
   --test-output-result-color: #00ff00;
+  --main-color-rgb: 0, 255, 0;
+  --main-color: rgb(var(--main-color-rgb));
 }
 
 body {background: black; padding: 0; margin: 0; display: flex;}
@@ -13,5 +15,10 @@ body {background: black; padding: 0; margin: 0; display: flex;}
 #code-area-container {height: 100%; width: calc(100% - 184px)}
 #code-area {height: calc(100% - 40px); margin: 20px;}
 #tabs {overflow-x: scroll; position: relative; white-space: nowrap}
-.tab {height: 30px; background: rgba(0, 0, 0, 0.8); width: 150px; border: var(--highlight-color) solid 1px; display: inline-block; vertical-align: bottom}
 #test-output-container {width: 40px; height: calc(100% - 2px); border: var(--highlight-color) solid 1px;}
+#tabs::-webkit-scrollbar {width: 5px; height: 5px; transition: 1s; }
+#tabs:hover::-webkit-scrollbar {height: 10px;}
+#tabs::-webkit-scrollbar-track {background: rgba(0, 0, 0, 0.8); border: white solid 1px}
+#tabs::-webkit-scrollbar-thumb {border: white solid 1px; background: rgb(var(--main-color-rgb));}
+#tabs::-webkit-scrollbar-thumb:hover {background: rgb(var(--main-color-rgb));}
+.tab {height: 30px; background: rgba(0, 0, 0, 0.8); width: 150px; border: var(--highlight-color) solid 1px; display: inline-block; vertical-align: bottom}

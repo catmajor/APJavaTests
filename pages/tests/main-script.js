@@ -46,6 +46,7 @@ function main() {
   })
 
   const testList = new TestList();
+  setTimeout(() => {matrixRain("low")}, 2000);
 }
 main();
 //alert(`${indent}, ${scanner}, ${comment}, ${char}`);
