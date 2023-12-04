@@ -38,6 +38,16 @@ site.get("/javascript/:file", (req, res) => {
   res.send(js);
 });
 
+site.get("/style/:file", (req, res) => {
+  res.setHeader("Content-Type", "text/css");
+  if (!fs.existsSync(`./pages/style/${req.params.file}`)) {
+    res.send("No such css file found");
+    return;
+  }
+  const css = fs.readFileSync(`./pages/style/${req.params.file}`, "utf-8");
+  res.send(css);
+});
+
 site.listen(port, () => {
   console.log(`Listening on port ${port}`);
 });

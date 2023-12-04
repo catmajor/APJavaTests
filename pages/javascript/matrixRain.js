@@ -1,11 +1,11 @@
-function matrixRain() {
+function matrixRain(frequency) {
   const dom = document.createElement("div");
   let dropletCount = 0;
   let clearingCount = 0;
   let redOnScreen = false;
   dom.setAttribute("id", "matrix-rain");
   document.body.appendChild(dom);
-  const availableChars = "日ﾊﾐﾋｰｳｼﾅﾓﾆｻﾜﾂｵﾘｱﾎﾃﾏｹﾒｴｶｷﾑﾕﾗｾﾈｽﾀﾇﾍｦｲｸｺｿﾁﾄﾉﾌﾔﾖﾙﾚﾛﾝ012345789Z:・.\"=*+-<>¦çﾘｸ"
+  const availableChars = /*"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890123456789=*+-<>"*/ "日ﾊﾐﾋｰｳｼﾅﾓﾆｻﾜﾂｵﾘｱﾎﾃﾏｹﾒｴｶｷﾑﾕﾗｾﾈｽﾀﾇﾍｦｲｸｺｿﾁﾄﾉﾌﾔﾖﾙﾚﾛﾝ012345789Z:・.\"=*+-<>¦çﾘｸ"
   function RainDrop(_startFrame, color = null) {
     if (this===window) throw "RainDrop must be called as a constructor";
     function Droplet(parent) {
@@ -20,6 +20,7 @@ function matrixRain() {
       this.dom.style.top = `${private.top}px`;
       this.dom.style.left = `${private.left}px`;
       this.text.textContent = parent.text.textContent;
+      this.text.style.transform = `scale(${private.transform1}, ${private.transform2})`;
       this.dom.style.fontSize = private.size;
       this.dom.style.animationDuration = `${private.fadeSpeed}s`
       this.potentialSwitchTimeout = null;
@@ -88,6 +89,8 @@ function matrixRain() {
     private.maxDropletCount = Math.ceil(private.maxFall / (private.framePrintInterval * private.speed));
     private.dropletArr = new Array(private.maxDropletCount);
     private.newestDropletIndex = 0;
+    private.transform1 = -1;
+    private.transform2 = -1;
     this.setTop = (px) => {
       this.dom.style.top = `${px}px`;
       private.top = px;
@@ -125,6 +128,9 @@ function matrixRain() {
         let frameSinceCreation = private.startFrame-frame;
         if (frameSinceCreation%private.framePrintInterval===0) {
           this.text.textContent = availableChars[Math.floor(Math.random()*availableChars.length)];
+          private.transform1 = Math.floor(Math.random()*2)===0?-1:1;
+          private.transform2 = Math.floor(Math.random()*2)===0?-1:1;
+          this.text.style.transform = `scale(${private.transform1}, ${private.transform2})`
           private.dropletArr.push(new Droplet(this));
         }
         if (private.top >= private.maxFall) {
@@ -158,7 +164,21 @@ function matrixRain() {
   }
   const rainDropArr = new ArrayManager();
   const clearingArr = new ArrayManager();
-  frame = 0;
+  let frame = 0;
+  let maxRate;
+  switch (frequency) {
+    case "low":
+      maxRate = 12;
+      break;
+    case "medium":
+      maxRate = 6;
+      break;
+    case "high":
+      maxRate = 3;
+      break
+    default: 
+      throw "Specify frequency for rain";
+  }
   new RainDrop(frame, "#00ffff");
   let calculatedLengthChance = (3+Math.E**4)
   setInterval(() => {
@@ -169,7 +189,7 @@ function matrixRain() {
       new RainDrop(frame);
       console.log(rainDropArr.array.length);
       console.log(clearingArr.array.length);
-      calculatedLengthChance = (3+Math.E**(-2*(dropletCount+clearingCount-4)))
+      calculatedLengthChance = (maxRate+Math.E**(-2*(dropletCount+clearingCount-4)))
     }
     frame++;
   }, 100);

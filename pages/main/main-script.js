@@ -36,7 +36,7 @@ function main () {
     }, 20);
   }
   playFancyText();
-  setTimeout(matrixRain ,2000);
+  setTimeout(() => {matrixRain("high")} ,2000);
 }
 
 main()
