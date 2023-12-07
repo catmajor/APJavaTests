@@ -120,7 +120,7 @@ function matrixRain(frequency) {
       }, private.fadeSpeed*1000)
     }
     this.clearDroplets = () => {
-      private.dropletArr?.forEach(ele => ele.destructor());
+      private.dropletArr?.forEach(ele => ele?.destructor());
     }
     this.callAction = async (frame) => {
       try {
@@ -166,15 +166,19 @@ function matrixRain(frequency) {
   const clearingArr = new ArrayManager();
   let frame = 0;
   let maxRate;
+  let slope;
   switch (frequency) {
     case "low":
       maxRate = 12;
+      slope = 1;
       break;
     case "medium":
       maxRate = 6;
+      slope = 1.5;
       break;
     case "high":
       maxRate = 3;
+      slope = 2;
       break
     default: 
       throw "Specify frequency for rain";
@@ -187,9 +191,7 @@ function matrixRain(frequency) {
     })
     if (Math.floor(Math.random()*calculatedLengthChance)===0) {
       new RainDrop(frame);
-      console.log(rainDropArr.array.length);
-      console.log(clearingArr.array.length);
-      calculatedLengthChance = (maxRate+Math.E**(-2*(dropletCount+clearingCount-4)))
+      calculatedLengthChance = (maxRate+Math.E**(-slope*(dropletCount+clearingCount-4)))
     }
     frame++;
   }, 100);
@@ -198,13 +200,13 @@ function matrixRain(frequency) {
     rainDropArr.array.forEach(ele => {
       if (ele) {
         ele.clearDroplets();
-        ele.destructor();
+        ele?.destructor();
       }
     });
     clearingArr.array.forEach(ele => {
       if (ele) {
         ele.clearDroplets();
-        ele.destructor();
+        ele?.destructor();
       }
     });
     rainDropArr.clear();

@@ -5,7 +5,8 @@
   --main-color-hex: #00ff00;
   --main-color: var(--main-color-hex);
 }
-
+footer {position: fixed; color: white; font-family: 'Ubuntu'; bottom: 0; right: 0; font-size: 20}
+footer a {color: white;}
 body {background: black; padding: 0; margin: 0; display: flex;}
 #sidebar {height: calc(100% - 2px); width: 140px; display: flex; align-items: center; justify-content: center; border: var(--highlight-color) solid 1px; background: rgba(0, 0, 0, 0.6)}
 #sidebar ul {list-style-type: none; padding: 0;}
@@ -16,13 +17,13 @@ body {background: black; padding: 0; margin: 0; display: flex;}
 #code-area-container {height: 100%; width: calc(100% - 184px)}
 #code-area {height: calc(100% - 40px); margin: 20px;}
 #tabs {overflow-x: auto; position: relative; white-space: nowrap; height: 40px; overflow-y: hidden}
-#test-output-container {width: 40px; height: calc(100% - 2px); border: var(--highlight-color) solid 1px;}
 #tabs::-webkit-scrollbar {width: 5px; height: 5px; transition: 1s; }
 #tabs:hover::-webkit-scrollbar {height: 10px;}
 #tabs::-webkit-scrollbar-track {background: rgba(0, 0, 0, 0.8); border: white solid 1px}
 #tabs::-webkit-scrollbar-thumb {border: white solid 1px; background: rgb(var(--main-color-rgb));}
 #tabs::-webkit-scrollbar-thumb:hover {background: rgb(var(--main-color-rgb));}
 .tab {height: 30px; background: rgba(0, 0, 0, 0.8); width: 150px; border: var(--highlight-color) solid 1px; display: inline-block; vertical-align: bottom; color: white; font-family: 'Ubuntu'; cursor: default}
+#tabs .selected {border-color: var(--main-color)}
 .tab .edit-input {all: unset; font-family: 'Roboto'; width: 100%;}
 .tab .input-wrapper {display: none; flex-grow: 1; margin: 0 5px 0 5px; }
 .tab span {cursor: pointer;}
@@ -34,9 +35,17 @@ body {background: black; padding: 0; margin: 0; display: flex;}
 .tab span:not(:first-of-type):hover {color: var(--main-color-hex); user-select: none}
 #add-button {display: inline-block; vertical-align: bottom; color: white; border: white solid 1px; height: 30px; width: 30px; cursor: pointer;}
 #add-button span {display: flex; width: 100%; height: 100%; justify-content: center; align-items: center; font-size: 40px; font-weigth: 2000}
+#add-button:hover {border-color: var(--main-color-hex); color: var(--main-color-hex)}
 
-#text-area {width: 100%; height: calc(100% - 40px); border: white solid 1px; display: flex; color: white; font-family: 'Roboto Mono'; font-size: 12px}
-#text-area #lines {width: 30px; height: 100%; border-right: white solid 1px; background: rgba(0, 0, 0, 0.8)}
-#text-area #text-input {width: 100%; height: 100%;}
-#text-area textarea {all: unset; width: 100%; height: 100%; transition: 0.5s}
-#text-area textarea:focus {background: rgba(0, 0, 0, 0.8)}
+#text-area {width: 100%; height: calc(100% - 40px); border: white solid 1px; display: flex; color: white; font-family: 'Roboto Mono'; font-size: 12px; overflow: auto; transition: 0.5s; cursor: text; background: rgba(0,0,0,0.5)}
+#text-area #lines {width: 30px; height: max-content; border-right: white solid 1px;}
+#text-area #input { width: 100%; height: max-content; box-shadow: none; border: none; outline: none; unset: all; font-size: 12px; font-family: 'Roboto Mono';}
+#text-area.focused {background: rgba(0, 0, 0, 0.85);}
+#text-area::-webkit-scrollbar {width: 5px; transition: 1s; }
+#text-area.focused::-webkit-scrollbar {width: 10px; transition: 1s}
+#text-area::-webkit-scrollbar-track {border: white solid 1px}
+#text-area::-webkit-scrollbar-thumb {border: white solid 1px; background: rgb(var(--main-color-rgb));}
+#text-area.focused::-webkit-scrollbar-thumb {background: rgb(var(--main-color-rgb));}
+
+#test-output-container {width: 42px; height: calc(100% - 2px); position: relative}
+#test-output {width: 40px; height: calc(100% - 2px); border: var(--highlight-color) solid 1px; position: absolute; right: 0}

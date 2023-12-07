@@ -40,9 +40,31 @@ function main() {
     checkboxes[ind] = new checkBox(box, ind);
   });
   const tabsDOM = document.getElementById("tabs");
+  const textAreaWrapper = document.getElementById("text-area");
+  const textArea = document.getElementById("input");
+  const lineNumber = document.getElementById("lines");
   const tabList = [];
+  let selectedTab = null;
   const addButton = document.getElementById("add-button");
-  function tab () {
+  function updateTabs () {
+    const simpleTabArr = tabList.map(ele => ele.simplify());
+    localStorage.setItem("tabs", JSON.stringify(simpleTabArr));
+  }
+  function createTabs () {
+    let tabs = JSON.parse(localStorage.getItem("tabs"));
+    console.log(tabs)
+    if (tabs&&tabs?.length!==0) {
+      tabs.forEach((tabEle) => {
+        new tab(tabEle[0], tabEle[1]);
+      });
+    }
+    if (tabList.length===0) {
+      new tab();
+    }
+    tabList[0].select();
+  }
+  createTabs();
+  function tab (name = null, textAreaContent = null) {
     const private = {};
     private.dom = document.createElement("div");
     private.dom.classList.add("tab");
@@ -66,11 +88,13 @@ function main() {
     private.dom.appendChild(private.wrapper);
     tabsDOM.insertBefore(private.dom, addButton);
     tabList.push(this);
-    private.name.textContent = "New Tab " + tabList.length;
+    private.name.textContent = name ?? "Main" + (tabList.length===1?"":(tabList.length-1)) + ".java";
     private.nameless = true;
     private.edit.innerHTML = '&#9998;';
     private.delete.textContent = "X";
-    this.edit = () => {
+    this.textAreaContent = textAreaContent ?? "Code Here";
+    this.edit = (e) => {
+      e.stopPropagation()
       private.editInput.value = private.name.textContent;
       private.dom.classList.add("editing");
       private.editInput.focus({focusVisible: true});
@@ -79,21 +103,90 @@ function main() {
       private.name.textContent = private.editInput.value;
     }
     this.finishEdit = () => {
-      private.name.textContent = private.editInput.value;
-      private.dom.classList.remove("editing")
+      let javaIndex = private.editInput.value.indexOf(".java")
+      private.name.textContent = private.editInput.value.substring(0, javaIndex!==-1?javaIndex:private.editInput.value.length) + ".java";
+      private.dom.classList.remove("editing");
+      updateTabs();
     }
-    this.destructor = () => {
+    this.destructor = (e) => {
+      e?.stopPropagation()
       tabsDOM.removeChild(private.dom);
-      tabList.splice(tabList.indexOf(this), 1);
+      let index = tabList.indexOf(this);
+      tabList.splice(index, 1);
+      if (tabList.length === 0) {
+        new tab();
+      } else {
+        tabList[index].select();
+      }
+      updateTabs();
     }
+    this.simplify = () => {
+      const values = [private.name.textContent, this.textAreaContent];
+      return values;
+    }
+    this.select = () => {
+      selectedTab?.unselect();
+      selectedTab = this;
+      private.dom.classList.add("selected");
+      textArea.innerText = this.textAreaContent;
+      setLines(analyzeText(textArea.innerText));
+    }
+    this.unselect = () => {
+      private.dom.classList.remove("selected");
+    }
+    private.dom.addEventListener("click", this.select)
     private.edit.addEventListener("click", this.edit);
     private.editInput.addEventListener("focusout", this.finishEdit);
-    private.editInput.addEventListener("change", this.onEdit)
-    private.delete.addEventListener("click", this.destructor)
+    private.editInput.addEventListener("change", this.onEdit);
+    private.delete.addEventListener("click", this.destructor);
+    updateTabs();
   }
   addButton.addEventListener("mousedown", () => {
     new tab();
+    tabList[tabList.length-1].select();
   });
+  function analyzeText (text) {
+    let height = textArea.offsetHeight/16
+    return  height;
+  }
+  function setLines (number) {
+    console.log(number)
+    let string = "";
+    for (let i = 1; i<=number; i++) {
+      string += i + "<br>";
+    }
+    lineNumber.innerHTML = string;
+  }
+  let changeTimeout = null;
+  textAreaWrapper.addEventListener("click", () => textArea.focus());
+  textArea.addEventListener("focus", ()=> {
+    textAreaWrapper.classList.add("focused");
+  });
+  textArea.addEventListener("focusout", ()=> {
+    textAreaWrapper.classList.remove("focused");
+  });
+  textArea.addEventListener("input", ()=>{
+    if (changeTimeout) {
+      clearTimeout(changeTimeout);
+    }
+    changeTimeout = setTimeout(()=>{
+      try {
+        setLines(analyzeText(textArea.innerText));
+        selectedTab.textAreaContent = textArea.innerText;
+        updateTabs();
+      } catch (e) {console.log(e)}
+    }, 50); 
+  });
+  const testOutput = document.getElementById("test-output");
+  let testOutputOpen = false;
+  testOutput.addEventListener("click", ()=> {
+    if (testOutputOpen) {
+      closeTestOutput();
+    } else {
+      openTestOutput();
+    }
+    testOutputOpen = !testOutputOpen;
+  })
   const testList = new TestList();
   setTimeout(() => {matrixRain("low")}, 2000);
 }
