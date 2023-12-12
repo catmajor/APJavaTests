@@ -15,7 +15,6 @@ function main() {
     this.comment = checkboxes[2];
     this.char = checkboxes[3];
     this.tests = [this.indent, this.scanner, this.comment, this.char];
-    console.log(indent)
     this.indent.setState(indent);
     this.scanner.setState(scanner);
     this.comment.setState(comment);
@@ -43,6 +42,7 @@ function main() {
   const textAreaWrapper = document.getElementById("text-area");
   const textArea = document.getElementById("input");
   const lineNumber = document.getElementById("lines");
+  const heightRuler = document.getElementById("input-height-ruler");
   const tabList = [];
   let selectedTab = null;
   const addButton = document.getElementById("add-button");
@@ -52,7 +52,6 @@ function main() {
   }
   function createTabs () {
     let tabs = JSON.parse(localStorage.getItem("tabs"));
-    console.log(tabs)
     if (tabs&&tabs?.length!==0) {
       tabs.forEach((tabEle) => {
         new tab(tabEle[0], tabEle[1]);
@@ -128,8 +127,8 @@ function main() {
       selectedTab?.unselect();
       selectedTab = this;
       private.dom.classList.add("selected");
-      textArea.innerText = this.textAreaContent;
-      setLines(analyzeText(textArea.innerText));
+      textArea.value = this.textAreaContent;
+      setLines(analyzeText(textArea.value));
     }
     this.unselect = () => {
       private.dom.classList.remove("selected");
@@ -146,18 +145,17 @@ function main() {
     tabList[tabList.length-1].select();
   });
   function analyzeText (text) {
-    let height = textArea.offsetHeight/16
-    return  height;
+    let height = text.split(/\r*\n/g).length || 1;
+    textArea.style.height = `${height * 16}px`;
+    return height;
   }
   function setLines (number) {
-    console.log(number)
     let string = "";
     for (let i = 1; i<=number; i++) {
       string += i + "<br>";
     }
     lineNumber.innerHTML = string;
   }
-  let changeTimeout = null;
   textAreaWrapper.addEventListener("click", () => textArea.focus());
   textArea.addEventListener("focus", ()=> {
     textAreaWrapper.classList.add("focused");
@@ -166,26 +164,56 @@ function main() {
     textAreaWrapper.classList.remove("focused");
   });
   textArea.addEventListener("input", ()=>{
-    if (changeTimeout) {
-      clearTimeout(changeTimeout);
-    }
-    changeTimeout = setTimeout(()=>{
-      try {
-        setLines(analyzeText(textArea.innerText));
-        selectedTab.textAreaContent = textArea.innerText;
-        updateTabs();
-      } catch (e) {console.log(e)}
-    }, 50); 
+    setLines(analyzeText(textArea.value));
+    selectedTab.textAreaContent = textArea.value;
+    updateTabs();
   });
-  const testOutput = document.getElementById("test-output");
+  const testOutputButton = document.getElementById("test-output-button");
+  const testOutputContainer = document.getElementById("test-output-container");
+  const testOutputBody = document.getElementById("test-output");
+  document.documentElement.style.setProperty("--window-width", `${window.innerWidth}px`);
   let testOutputOpen = false;
-  testOutput.addEventListener("click", ()=> {
+  function closeTestOutput () {
+    document.body.classList.remove("open-testoutput");
+    testOutputButton.textContent = "Click to Run Tests";
+  }
+  function openTestOutput () {
+    document.body.classList.add("open-testoutput");
+    testOutputButton.textContent = "Click to Close Test Output";
+  }
+  async function runTests() {
+    const body = {
+      enabledTests: {
+        indentTest: indent,
+        scannerTest: scanner,
+        commentTest: comment,
+        charTest: char,
+      },
+      tabs: tabList.map(ele => ele.simplify())
+    };
+    let result = await fetch("../api", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(body),
+    });
+    console.log(result);
+    let response = await result.json();
+    console.log(response);
+    testOutputBody.textContent = response;
+  }
+  testOutputButton.addEventListener("click", ()=> {
     if (testOutputOpen) {
       closeTestOutput();
     } else {
+      runTests();
       openTestOutput();
     }
     testOutputOpen = !testOutputOpen;
+  });
+  window.addEventListener("resize", () => {
+    document.documentElement.style.setProperty("--window-width", `${window.innerWidth}px`)
   })
   const testList = new TestList();
   setTimeout(() => {matrixRain("low")}, 2000);

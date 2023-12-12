@@ -4,17 +4,19 @@
   --main-color-rgb: 0, 255, 0;
   --main-color-hex: #00ff00;
   --main-color: var(--main-color-hex);
+  --window-width: 0;
 }
-footer {position: fixed; color: white; font-family: 'Ubuntu'; bottom: 0; right: 0; font-size: 20}
+footer {position: fixed; color: white; font-family: 'Ubuntu'; bottom: 0; right: 0; font-size: 20px; z-index: 9999999}
 footer a {color: white;}
-body {background: black; padding: 0; margin: 0; display: flex;}
+body {background: black; padding: 0; margin: 0; display: flex; overflow-x: hidden; width: 100%; height: 100%;}
 #sidebar {height: calc(100% - 2px); width: 140px; display: flex; align-items: center; justify-content: center; border: var(--highlight-color) solid 1px; background: rgba(0, 0, 0, 0.6)}
 #sidebar ul {list-style-type: none; padding: 0;}
 #sidebar ul li {display: flex; list-style-type: none; align-items: center}
 #sidebar ul li p {color: white; width: 100px; font-family: 'Ubuntu'; margin-left: 5px; margin-right: 5px}
 .checkbox {width: 20px; height: 20px; background-color: red; margin-left: 5px; margin-right: 5px; border: white solid 1px;}
 
-#code-area-container {height: 100%; width: calc(100% - 184px)}
+#code-area-container {height: 100%; width: calc(100% - 184px); opacity: 1; transition: 1s}
+body.open-testoutput #code-area-container {opacity: 0}
 #code-area {height: calc(100% - 40px); margin: 20px;}
 #tabs {overflow-x: auto; position: relative; white-space: nowrap; height: 40px; overflow-y: hidden}
 #tabs::-webkit-scrollbar {width: 5px; height: 5px; transition: 1s; }
@@ -32,14 +34,15 @@ body {background: black; padding: 0; margin: 0; display: flex;}
 .tab .tab-content-wrapper {width: 100%; height: 100%; display: flex; align-items: center;}
 .tab .name {flex-grow: 1; margin: 0 5px 0 5px; cursor: default; overflow-x: hidden}
 .tab .delete {margin-right: 5px}
+.tab:hover .name {color: var(--main-color-hex)}
 .tab span:not(:first-of-type):hover {color: var(--main-color-hex); user-select: none}
 #add-button {display: inline-block; vertical-align: bottom; color: white; border: white solid 1px; height: 30px; width: 30px; cursor: pointer;}
 #add-button span {display: flex; width: 100%; height: 100%; justify-content: center; align-items: center; font-size: 40px; font-weigth: 2000}
 #add-button:hover {border-color: var(--main-color-hex); color: var(--main-color-hex)}
 
 #text-area {width: 100%; height: calc(100% - 40px); border: white solid 1px; display: flex; color: white; font-family: 'Roboto Mono'; font-size: 12px; overflow: auto; transition: 0.5s; cursor: text; background: rgba(0,0,0,0.5)}
-#text-area #lines {width: 30px; height: max-content; border-right: white solid 1px;}
-#text-area #input { width: 100%; height: max-content; box-shadow: none; border: none; outline: none; unset: all; font-size: 12px; font-family: 'Roboto Mono';}
+#text-area #lines {width: 30px; height: max-content; border-right: white solid 1px; line-height: 16px}
+#text-area #input { width: 100%; height: max-content; box-shadow: none; border: none; outline: none; unset: all; font-size: 12px; font-family: 'Roboto Mono'; line-height: 16px; background: none; color: white; overflow: hidden; resize: none}
 #text-area.focused {background: rgba(0, 0, 0, 0.85);}
 #text-area::-webkit-scrollbar {width: 5px; transition: 1s; }
 #text-area.focused::-webkit-scrollbar {width: 10px; transition: 1s}
@@ -47,5 +50,9 @@ body {background: black; padding: 0; margin: 0; display: flex;}
 #text-area::-webkit-scrollbar-thumb {border: white solid 1px; background: rgb(var(--main-color-rgb));}
 #text-area.focused::-webkit-scrollbar-thumb {background: rgb(var(--main-color-rgb));}
 
-#test-output-container {width: 42px; height: calc(100% - 2px); position: relative}
-#test-output {width: 40px; height: calc(100% - 2px); border: var(--highlight-color) solid 1px; position: absolute; right: 0}
+#test-output-container {width: 42px; height: calc(100% - 2px); position: relative; transition: 1s left;}
+#test-output-button {width: 40px; height: 100%; border: var(--highlight-color) solid 1px; position: absolute; left: 0; transition: 1s left; z-index: 99; writing-mode: vertical-lr; color: white; display: flex; font-family: 'Ubuntu'; justify-content: center; align-items: center; background: rgba(0, 0, 0, 0.5); cursor: pointer}
+#test-output-button:hover {color: var(--main-color-hex); border-color: var(--main-color-hex)}
+body.open-testoutput #test-output-button {left: calc(204px - var(--window-width)); background: black}
+#test-output {border: var(--highlight-color) solid 1px; height: 100%; position: absolute; left: 40px; width: calc(var(--window-width) - 204px); background: ; transition: 1s left;}
+body.open-testoutput #test-output {display: block; z-index: 98; opacity: 1; left: calc(244px - var(--window-width)); transition: 1s;}
