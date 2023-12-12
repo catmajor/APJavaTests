@@ -3,6 +3,10 @@ const site = express();
 const fs = require("fs");
 const port = 8443;
 
+const IndentTest = require("./tests-api/translated/indentTest.js");
+
+site.use(express.json())    
+
 const getPage = (dirName) => {
   let html = fs.readFileSync(`./pages/${dirName}/main-index.html`, "utf-8");
   let css = fs.readFileSync(`./pages/${dirName}/main-style.css`, "utf-8");
@@ -20,6 +24,11 @@ site.get("/", (req, res) => {
 site.get("/api", (req, res) => {
   res.setHeader("Content-Type", "text/html");
   res.send("future api endpoint");
+});
+
+site.post("/api", (req, res) => {
+  let val = IndentTest(req.body.tabs[0][0], req.body.tabs[0][1].split("\n"));
+  res.json(val);
 });
 
 site.get("/tests", (req, res) => {
