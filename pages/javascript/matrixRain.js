@@ -183,12 +183,12 @@ function matrixRain(frequency) {
     default: 
       throw "Specify frequency for rain";
   }
-  new RainDrop(frame, "#00ffff");
+  new RainDrop(frame, "#00ff00");
   let calculatedLengthChance = (3+Math.E**4)
   setInterval(() => {
     rainDropArr.array.forEach(async (drop) => {
       if (drop) drop.callAction(frame);
-    })
+    });
     if (Math.floor(Math.random()*calculatedLengthChance)===0) {
       new RainDrop(frame);
       calculatedLengthChance = (maxRate+Math.E**(-slope*(dropletCount+clearingCount-4)))
@@ -196,6 +196,9 @@ function matrixRain(frequency) {
     frame++;
   }, 100);
   window.addEventListener("visibilitychange", () => {
+    if (dropletCount === 0 && clearingCount === 0) {
+      new Raindrop(frame);
+    }
     frame = 0;
     rainDropArr.array.forEach(ele => {
       if (ele) {
