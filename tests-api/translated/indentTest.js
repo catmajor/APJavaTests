@@ -6,7 +6,7 @@ let conventionUsedEnum =  {
   WITH_PARENTH: 2,
 }
 
-function IndentTest(fileName, fileLines) {
+function indentTest(fileName, fileLines) {
   const fails = new TotalFails(fileName);
   let inMultilineComment = false;
   let braketInd = 0;
@@ -64,7 +64,7 @@ function IndentTest(fileName, fileLines) {
       if (trimLine.includes("*/")) inMultilineComment = false;
       continue;
     }
-    if (line.includes("{")&&line.includes("}")) {
+    if (line.includes("{")&&line.includes("}")&&(line.indexOf("{")<line.indexOf("}"))) {
       //fail for too many brackets on one line
       fails.add(lineNum, "Should not contain an opener and closer bracket");
     }
@@ -180,7 +180,7 @@ function IndentTest(fileName, fileLines) {
       &&
       !trimLine.startsWith("//")
       &&
-      !fileLines[lineNum].trim().startsWith("{")
+      !fileLines[lineNum]?.trim().startsWith("{")
     ) {
       prevEndsWithSemicolon = false;
     } else {
@@ -190,7 +190,7 @@ function IndentTest(fileName, fileLines) {
   return [fails.fails];
 }
 
-module.exports = IndentTest;
+module.exports = indentTest;
 
 /*
 Test

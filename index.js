@@ -4,7 +4,7 @@ const fs = require("fs");
 const port = 8443;
 
 const IndentTest = require("./tests-api/translated/indentTest.js");
-
+const TestRunner = require("./tests-api/test-runner.js")
 site.use(express.json())    
 
 const getPage = (dirName) => {
@@ -27,8 +27,15 @@ site.get("/api", (req, res) => {
 });
 
 site.post("/api", (req, res) => {
-  let val = IndentTest(req.body.tabs[0][0], req.body.tabs[0][1].split("\n"));
-  res.json(val);
+  if (!req.body.enabledTests || !req.body.tabs) {
+    res.status(400);
+    res.json([{error: "Missing required fields. Both 'body.enabledTests' and 'body.tabs' are required."}]);
+    return;
+  }
+  const runner = new TestRunner(req.body.enabledTests, req.body.tabs);
+  runner.run();
+  console.log(runner.output)
+  res.json(runner.output);
 });
 
 site.get("/tests", (req, res) => {

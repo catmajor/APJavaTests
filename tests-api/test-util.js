@@ -1,3 +1,5 @@
+
+
 class TotalFails {
   #fails = [];
   #fileName;
@@ -16,7 +18,6 @@ class TotalFails {
 class Fail {
   #warn = false;
   constructor (lineNum = 0, text = "", warn = false) {
-    this.fileName = fileName;
     this.text = text;
     this.lineNum = lineNum;
     this.#warn = (!!warn);

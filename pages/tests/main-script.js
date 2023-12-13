@@ -181,13 +181,14 @@ function main() {
     document.body.classList.add("open-testoutput");
     testOutputButton.textContent = "Click to Close Test Output";
   }
+  const testList = new TestList();
   async function runTests() {
     const body = {
       enabledTests: {
-        indentTest: indent,
-        scannerTest: scanner,
-        commentTest: comment,
-        charTest: char,
+        indentTest: testList.indent.state,
+        scannerTest: testList.scanner.state,
+        commentTest: testList.comment.state,
+        charTest: testList.char.state,
       },
       tabs: tabList.map(ele => ele.simplify())
     };
@@ -215,7 +216,6 @@ function main() {
   window.addEventListener("resize", () => {
     document.documentElement.style.setProperty("--window-width", `${window.innerWidth}px`)
   })
-  const testList = new TestList();
   setTimeout(() => {matrixRain("low")}, 2000);
 }
 main();
