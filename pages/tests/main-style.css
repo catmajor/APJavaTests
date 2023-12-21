@@ -61,7 +61,7 @@ body.open-testoutput #code-area-container {opacity: 0}
 
 #test-output-container {width: 42px; height: calc(100% - 2px); position: relative; transition: 1s left;}
 #test-output-button {width: 40px; height: 100%; border: var(--highlight-color) solid 1px; position: absolute; left: 0; transition: 1s left, 1s border-color, 1s color; z-index: 99; writing-mode: vertical-lr; color: white; display: flex; font-family: 'Ubuntu'; justify-content: center; align-items: center; background: rgba(0, 0, 0, 0.5); cursor: pointer}
-#test-output-button:hover {color: var(--main-color-hex); border-color: var(--main-color-hex)}
+#test-output-button:hover {border-color: var(--main-color-hex)}
 body.open-testoutput #test-output-button {left: calc(204px - var(--window-width)); background: black}
 #test-output {border: var(--highlight-color) solid 1px; height: 100%; position: absolute; left: 40px; width: calc(var(--window-width) - 204px); background: ; transition: 1s left, 1s border-color; padding: 10px; height: calc(100% - 20px)}
 body.open-testoutput #test-output {display: block; z-index: 98; opacity: 1; left: calc(244px - var(--window-width)); transition: 1s; background: rgba(0, 0, 0, 0.5);}
@@ -76,7 +76,8 @@ body.open-testoutput #test-output {display: block; z-index: 98; opacity: 1; left
 .tab-test-result:not(.pass)>.text:hover>p:first-of-type {color: rgb(var(--test-output-result-single))} 
 .tab-test-result>.test-result:not(.pass)>.text:hover>p:first-of-type {color: #ff0000}
 .test-result { margin-left: 10px; color: #ff0000; display: none}
-.test-result.pass {color: #00ff00}
+.test-result.pass {color: #00ff00; cursor: default}
+.test-result.pass .text p {cursor: default}
 .test-result.open .fail {display: block}
 .fail {margin-left: 20px; display: none; font-family: 'Roboto Mono'}
 

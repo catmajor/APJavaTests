@@ -88,7 +88,8 @@ function main() {
     private.nameless = true;
     private.edit.innerHTML = '&#9998;';
     private.delete.textContent = "X";
-    this.textAreaContent = textAreaContent ?? "Code Here";
+    this.textAreaContent = textAreaContent ?? "//Code Here";
+    this.prevContent = null;
     this.edit = (e) => {
       e.stopPropagation()
       private.editInput.value = private.name.textContent;
@@ -303,11 +304,30 @@ function main() {
     testOutputButton.textContent = "Click to Run Tests";
     root.classList.remove("fail-anim");
     root.style.animation = "";
+    if (rootTimeout) {
+      root.classList.remove("partial");
+      root.classList.remove("fail");
+      clearTimeout(rootTimeout);
+      rootTimeout = null;
+    }
   }
+  let prevResponse = null;
   function openTestOutput () {
     testOutputBody.innerHTML = "";
     document.body.classList.add("open-testoutput");
     testOutputButton.textContent = "Click to Close Test Output";
+    let tabDifferent = false
+    tabList.forEach(tab => {
+      if (tab.prevContent !== tab.textAreaContent) {
+        tabDifferent = true;
+        tab.prevContent = tab.textAreaContent;
+      }
+    });
+    if (tabDifferent) {
+      runTests();
+    } else {
+      createTestOutput(prevResponse);
+    }
   }
   async function runTests() {
     if (!(testList.indent.state||testList.scanner.state||testList.char.state||testList.comment.state)) {
@@ -336,6 +356,7 @@ function main() {
     console.log(result);
     let response = await result.json();
     console.log(response);
+    prevResponse = response;
     createTestOutput(response);
   }
   testOutputButton.addEventListener("click", ()=> {
@@ -343,7 +364,6 @@ function main() {
       closeTestOutput();
     } else {
       openTestOutput();
-      runTests();
     }
     testOutputOpen = !testOutputOpen;
   });
