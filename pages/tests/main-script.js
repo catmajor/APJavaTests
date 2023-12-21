@@ -1,12 +1,10 @@
 function main() {
+  const root = document.querySelector(":root");
   const urlParams = new URLSearchParams(window.location.search);
-  const indent = urlParams.get('indent') ?? false;
-  const scanner = urlParams.get('scanner') ?? false;
-  const comment = urlParams.get('comment') ?? false;
-  const char = urlParams.get('char') ?? false;
-  if (!(indent||scanner||comment||char)) {
-    alert("Please select a test");
-  }
+  const indent = urlParams.get('indent')==="true";
+  const scanner = urlParams.get('scanner') ==="true" ;
+  const comment = urlParams.get('comment') ==="true";
+  const char = urlParams.get('char') ==="true" ;
   const checkboxesNodeList = document.querySelectorAll(".checkbox");
   const checkboxes = new Array(checkboxesNodeList.length);
   function TestList () {
@@ -42,7 +40,6 @@ function main() {
   const textAreaWrapper = document.getElementById("text-area");
   const textArea = document.getElementById("input");
   const lineNumber = document.getElementById("lines");
-  const heightRuler = document.getElementById("input-height-ruler");
   const tabList = [];
   let selectedTab = null;
   const addButton = document.getElementById("add-button");
@@ -173,16 +170,150 @@ function main() {
   const testOutputBody = document.getElementById("test-output");
   document.documentElement.style.setProperty("--window-width", `${window.innerWidth}px`);
   let testOutputOpen = false;
+  const testList = new TestList();
+  let rootTimeout = null;
+  function createTestOutput (json) {
+    let overallFail = false;
+    let overallPartial = false;
+    function File (json) {
+      if (this===window) throw "create with new";
+      function Test (name, json, lineNumMatters = false) {
+        if (this===window) throw "create with new";
+        function Fail (json) {
+          if (this===window) throw "create with new";
+          const fail = {};
+          console.log(json)
+          fail.dom = document.createElement("div");
+          fail.dom.classList.add("fail");
+          fail.dom.textContent = (lineNumMatters?("Line " + json.lineNum + ": "):"") + json.text;
+          test.dom.appendChild(fail.dom);
+        }
+        const test = {};
+        test.open = false;
+        test.dom = document.createElement("div");
+        test.dom.classList.add("test-result");
+        test.text = document.createElement("div");
+        test.text.classList.add("text");
+        test.openTest = document.createElement("p");
+        test.openTest.innerHTML = "&#9655";
+        test.testName = document.createElement("p");
+        test.testName.textContent = name;
+        test.text.appendChild(test.openTest);
+        test.text.appendChild(test.testName);
+        test.dom.appendChild(test.text);
+        file.dom.appendChild(test.dom);
+        if (json[0]===false) test.dom.classList.add("pass");
+        else {
+          test.text.addEventListener("click", ()=> {
+            if (test.open) {
+              test.dom.classList.remove("open");
+              test.open = false;
+              test.openTest.innerHTML = "&#9655";
+            } else {
+              test.dom.classList.add("open");
+              test.open = true;
+              test.openTest.innerHTML = "&#9661";
+            }
+          });
+          json.forEach(fail => {
+            new Fail(fail);
+          });
+        }
+      }
+      let fails = false;
+      let partial = false;
+      Object.keys(json).forEach((key) => {
+        if (key.includes("Test")) {
+          if(json[key][0]===false) {
+            partial = true;
+            overallPartial = true;
+          } else {
+            fails = true;
+            overallFail = true;
+          }
+        };
+      });
+      const file = {};
+      file.open = false;
+      file.dom = document.createElement("div");
+      file.dom.classList.add("tab-test-result");
+      if (!fails) file.dom.classList.add("pass");
+      if (partial&&fails) file.dom.classList.add("partial");
+      file.text = document.createElement("div");
+      file.text.classList.add("text");
+      file.openOutput = document.createElement("p");
+      file.openOutput.innerHTML = "&#9655;";
+      file.fileName = document.createElement("p");
+      file.fileName.textContent = json.name;
+      file.text.appendChild(file.openOutput);
+      file.text.appendChild(file.fileName);
+      file.dom.appendChild(file.text);
+      testOutputBody.appendChild(file.dom);
+      file.text.addEventListener("click", ()=> {
+        if (file.open) {
+          file.dom.classList.remove("open");
+          file.openOutput.innerHTML = "&#9655";
+          file.open = false;
+        } else {
+          file.dom.classList.add("open");
+          file.openOutput.innerHTML = "&#9661";
+          file.open = true;
+        }
+      });
+      Object.keys(json).forEach((key) => {
+        switch(key) {
+          case "indentTest":
+            new Test("Indent Test", json[key], true);
+            break;
+          case "scannerTest":
+            new Test("Scanner Test", json[key], false);
+            break;
+          case "charTest":
+            new Test("Char Test", json[key], true);
+            break;
+          case "commentTest":
+            new Test("Comment Test", json[key],false);
+            break;
+        }
+      });
+    }
+    json.forEach((fileContent) => {
+      new File(fileContent);
+    });
+    if (overallFail) {
+      console.log("hi");
+      root.classList.add("fail-anim");
+      if (overallPartial) {
+        root.classList.add("partial");
+        rootTimeout = setTimeout(() => {
+          root.classList.remove("partial");
+          rootTimeout = null;
+        }, 4000);
+      } else {
+        root.classList.add("fail");
+        rootTimeout = setTimeout(() => {
+          root.classList.remove("fail");
+          rootTimeout = null;
+        }, 4000)
+      }
+    }
+  }
   function closeTestOutput () {
     document.body.classList.remove("open-testoutput");
     testOutputButton.textContent = "Click to Run Tests";
+    root.classList.remove("fail-anim");
+    root.style.animation = "";
   }
   function openTestOutput () {
+    testOutputBody.innerHTML = "";
     document.body.classList.add("open-testoutput");
     testOutputButton.textContent = "Click to Close Test Output";
   }
-  const testList = new TestList();
   async function runTests() {
+    if (!(testList.indent.state||testList.scanner.state||testList.char.state||testList.comment.state)) {
+      alert("Please select at least one test");
+      return;
+    }
     const body = {
       enabledTests: {
         indentTest: testList.indent.state,
@@ -190,7 +321,10 @@ function main() {
         commentTest: testList.comment.state,
         charTest: testList.char.state,
       },
-      tabs: tabList.map(ele => ele.simplify())
+      tabs: tabList.map(ele => {
+        let simplified = ele.simplify()
+        return {name: simplified[0], text: simplified[1]}
+      })
     };
     let result = await fetch("../api", {
       method: "POST",
@@ -202,14 +336,14 @@ function main() {
     console.log(result);
     let response = await result.json();
     console.log(response);
-    testOutputBody.textContent = response;
+    createTestOutput(response);
   }
   testOutputButton.addEventListener("click", ()=> {
     if (testOutputOpen) {
       closeTestOutput();
     } else {
-      runTests();
       openTestOutput();
+      runTests();
     }
     testOutputOpen = !testOutputOpen;
   });

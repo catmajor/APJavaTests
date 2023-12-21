@@ -11,7 +11,7 @@ class TotalFails {
     this.#fails.push(new Fail(lineNum, text, params.warning));
   }
   get fails () {
-    return this.#fails!=0?this.#fails:false;
+    return this.#fails!=0?this.#fails:[false];
   }
 }
 

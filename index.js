@@ -11,8 +11,10 @@ const getPage = (dirName) => {
   let html = fs.readFileSync(`./pages/${dirName}/main-index.html`, "utf-8");
   let css = fs.readFileSync(`./pages/${dirName}/main-style.css`, "utf-8");
   let js = fs.readFileSync(`./pages/${dirName}/main-script.js`, "utf-8");
+  let matrixRain = fs.readFileSync(`./pages/javascript/matrixRain.js`);
   html = html.replace("#$#THIS-WILL-BE-REPLACED-WITH-STYLE-CONTENT#$#", css);
   html = html.replace("#$#THIS-WILL-BE-REPLACED-WITH-JS-CONTENT#$#", js);
+  html = html.replace("#$#THIS-WILL-BE-REPLACED-WITH-MATRIX-RAIN#$#", matrixRain);
   return html;
 };
 
@@ -33,8 +35,10 @@ site.post("/api", (req, res) => {
     return;
   }
   const runner = new TestRunner(req.body.enabledTests, req.body.tabs);
+  console.log(req.body)
   runner.run();
   console.log(runner.output)
+  console.log(runner.output[0].indentTest)
   res.json(runner.output);
 });
 

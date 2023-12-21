@@ -183,7 +183,7 @@ function matrixRain(frequency) {
     default: 
       throw "Specify frequency for rain";
   }
-  new RainDrop(frame, "#00ff00");
+  new RainDrop(frame);
   let calculatedLengthChance = (3+Math.E**4)
   setInterval(() => {
     rainDropArr.array.forEach(async (drop) => {

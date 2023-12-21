@@ -27,7 +27,7 @@ function scannerTest(fileName, fileLines) {
     } 
     if (!closed) fails.add(scannerLine, "Scanner not closed");
   }
-  return [fails.fails];
+  return fails.fails;
 }
 
 module.exports = scannerTest;

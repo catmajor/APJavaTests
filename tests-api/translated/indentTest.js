@@ -187,7 +187,7 @@ function indentTest(fileName, fileLines) {
       prevEndsWithSemicolon = true;
     }
   }
-  return [fails.fails];
+  return fails.fails;
 }
 
 module.exports = indentTest;

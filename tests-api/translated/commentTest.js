@@ -6,7 +6,7 @@ function commentTest(fileName, fileLines) {
     if (line.includes("//")) commentFound = true;
   }
   if (!commentFound) fails.add(0, "No comment found");
-  return [fails.fails];
+  return fails.fails;
 }
 
 module.exports = commentTest;

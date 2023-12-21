@@ -17,21 +17,21 @@ class TestRunner {
     this.#output = []
     this.#tabs.forEach(tab => {
       let tabOutput = {};
-      tabOutput.name = tab[0];
-      let tabLines = tab[1].split("\n");
+      tabOutput.name = tab.name;
+      let tabLines = tab.text.split("\n");
       Object.keys(this.#enabledTests).forEach(test => {
         switch (test) {
           case "indentTest":
-            tabOutput.indentTest = indentTest(tab[0], tabLines);
+            tabOutput.indentTest = indentTest(tabOutput.name, tabLines);
             break;
           case "scannerTest":
-            tabOutput.scannerTest = scannerTest(tab[0], tabLines);
+            tabOutput.scannerTest = scannerTest(tabOutput.name, tabLines);
             break;
           case "commentTest":
-            tabOutput.commentTest = commentTest(tab[0], tabLines);
+            tabOutput.commentTest = commentTest(tabOutput.name, tabLines);
             break;
           case "charTest":
-            tabOutput.charTest = charTest(tab[0], tabLines);
+            tabOutput.charTest = charTest(tabOutput.name, tabLines);
             break;
         }
       });

@@ -7,7 +7,7 @@ function charTest(fileName, fileLines) {
           fails.add(lineNumber, "Too many characters (over 80)");
       }
   }
-  return [fails.fails];
+  return fails.fails;
 }
 
 module.exports = charTest;
