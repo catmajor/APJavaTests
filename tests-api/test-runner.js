@@ -14,7 +14,7 @@ class TestRunner {
 
   }
   run () {
-    this.#output = []
+    this.#output = {enabledTests: this.#enabledTests, testOutput: []}
     this.#tabs.forEach(tab => {
       let tabOutput = {};
       tabOutput.name = tab.name;
@@ -35,7 +35,7 @@ class TestRunner {
             break;
         }
       });
-      this.#output.push(tabOutput);
+      this.#output.testOutput.push(tabOutput);
     })
   }
   get output () {

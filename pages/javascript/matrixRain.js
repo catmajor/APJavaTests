@@ -169,7 +169,7 @@ function matrixRain(frequency) {
   let slope;
   switch (frequency) {
     case "low":
-      maxRate = 12;
+      maxRate = 9;
       slope = 1;
       break;
     case "medium":
@@ -184,8 +184,8 @@ function matrixRain(frequency) {
       throw "Specify frequency for rain";
   }
   new RainDrop(frame);
-  let calculatedLengthChance = (3+Math.E**4)
-  setInterval(() => {
+  let calculatedLengthChance = (3+Math.E**4);
+  function animate () {
     rainDropArr.array.forEach(async (drop) => {
       if (drop) drop.callAction(frame);
     });
@@ -194,27 +194,32 @@ function matrixRain(frequency) {
       calculatedLengthChance = (maxRate+Math.E**(-slope*(dropletCount+clearingCount-4)))
     }
     frame++;
-  }, 100);
+  }
+  let animation = setInterval(animate, 100);
   window.addEventListener("visibilitychange", () => {
-    if (dropletCount === 0 && clearingCount === 0) {
-      new Raindrop(frame);
+    if (animation) {
+      clearInterval(animation);
+      animation = null;
+      frame = 0;
+      rainDropArr.array.forEach(ele => {
+        if (ele) {
+          ele.clearDroplets();
+          ele?.destructor();
+        }
+      });
+      clearingArr.array.forEach(ele => {
+        if (ele) {
+          ele.clearDroplets();
+          ele?.destructor();
+        }
+      });
+      rainDropArr.clear();
+      clearingArr.clear();
+      dropletCount = 0;
+      clearingCount = 0;
+    } else {
+      animation = setInterval(animate, 100);
+      new RainDrop(frame);
     }
-    frame = 0;
-    rainDropArr.array.forEach(ele => {
-      if (ele) {
-        ele.clearDroplets();
-        ele?.destructor();
-      }
-    });
-    clearingArr.array.forEach(ele => {
-      if (ele) {
-        ele.clearDroplets();
-        ele?.destructor();
-      }
-    });
-    rainDropArr.clear();
-    dropletCount = 0;
-    clearingCount = 0;
-    clearingArr.clear();
   });
 }

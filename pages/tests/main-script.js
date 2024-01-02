@@ -113,7 +113,8 @@ function main() {
       if (tabList.length === 0) {
         new tab();
       } else {
-        tabList[index].select();
+        console.log(tabList)
+        tabList[index-1].select();
       }
       updateTabs();
     }
@@ -278,7 +279,7 @@ function main() {
         }
       });
     }
-    json.forEach((fileContent) => {
+    json.testOutput.forEach((fileContent) => {
       new File(fileContent);
     });
     if (overallFail) {
@@ -289,13 +290,13 @@ function main() {
         rootTimeout = setTimeout(() => {
           root.classList.remove("partial");
           rootTimeout = null;
-        }, 4000);
+        }, 1500);
       } else {
         root.classList.add("fail");
         rootTimeout = setTimeout(() => {
           root.classList.remove("fail");
           rootTimeout = null;
-        }, 4000)
+        }, 1500)
       }
     }
   }
@@ -323,7 +324,13 @@ function main() {
         tab.prevContent = tab.textAreaContent;
       }
     });
-    if (tabDifferent) {
+    if (tabDifferent||
+        prevResponse?.testOutput.length!==tabList.length||
+        prevResponse?.enabledTests.indentTest!=testList.indent.state||
+        prevResponse?.enabledTests.scannerTest!=testList.scanner.state||
+        prevResponse?.enabledTests.commentTest!=testList.comment.state||
+        prevResponse?.enabledTests.chareTest!=testList.char.state
+       ) {
       runTests();
     } else {
       createTestOutput(prevResponse);

@@ -7,7 +7,7 @@
   --window-width: 0;
 }
 :root.fail-anim {
-  animation: flash-red 5s linear;
+  animation: flash-red-lite 2.5s linear;
 }
 :root.partial {
   --highlight-color: #ff0
@@ -80,6 +80,69 @@ body.open-testoutput #test-output {display: block; z-index: 98; opacity: 1; left
 .test-result.pass .text p {cursor: default}
 .test-result.open .fail {display: block}
 .fail {margin-left: 20px; display: none; font-family: 'Roboto Mono'}
+
+@keyframes flash-red-lite {
+  0% {
+    --main-color-rgb: 0, 255, 0;
+    --main-color-hex: #00ff00;
+    --main-color: var(--main-color-hex);
+  }
+  3% {
+    --main-color-rgb: 51, 204, 0;
+    --main-color-hex: #33cc00;
+    --main-color: var(--main-color-hex);
+  }
+  6% {
+    --main-color-rgb: 102, 153, 0;
+    --main-color-hex: #669900;
+    --main-color: var(--main-color-hex);
+  }
+  9% {
+    --main-color-rgb: 153, 102, 0;
+    --main-color-hex: #996600;
+    --main-color: var(--main-color-hex);
+  }
+  12% {
+    --main-color-rgb: 204, 51, 0;
+    --main-color-hex: #cc3300;
+    --main-color: var(--main-color-hex);
+  }
+  15% {
+    --main-color-rgb: 255, 0, 0;
+    --main-color-hex: #ff0000;
+    --main-color: var(--main-color-hex);
+  }
+  85% {
+    --main-color-rgb: 255, 0, 0;
+    --main-color-hex: #ff0000;
+    --main-color: var(--main-color-hex);
+  }
+  88% {
+    --main-color-rgb: 0, 255, 0;
+    --main-color-hex: #cc3300;
+    --main-color: var(--main-color-hex);
+  }
+  91% {
+    --main-color-rgb: 0, 255, 0;
+    --main-color-hex: #996600;
+    --main-color: var(--main-color-hex);
+  }
+  94% {
+    --main-color-rgb: 0, 255, 0;
+    --main-color-hex: #669900;
+    --main-color: var(--main-color-hex);
+  }
+  97% {
+    --main-color-rgb: 0, 255, 0;
+    --main-color-hex: #33cc00;
+    --main-color: var(--main-color-hex);
+  }
+  100% {
+    --main-color-rgb: 0, 255, 0;
+    --main-color-hex: #00ff00;
+    --main-color: var(--main-color-hex);
+  }
+}
 
 @keyframes flash-red {
   0% {
