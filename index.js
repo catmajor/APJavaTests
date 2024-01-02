@@ -8,9 +8,9 @@ const TestRunner = require("./tests-api/test-runner.js")
 site.use(express.json())    
 
 const getPage = (dirName) => {
-  let html = fs.readFileSync(`./pages/${dirName}/main-index.html`, "utf-8");
-  let css = fs.readFileSync(`./pages/${dirName}/main-style.css`, "utf-8");
-  let js = fs.readFileSync(`./pages/${dirName}/main-script.js`, "utf-8");
+  let html = fs.readFileSync(`./pages/${dirName}/${dirName}-index.html`, "utf-8");
+  let css = fs.readFileSync(`./pages/${dirName}/${dirName}-style.css`, "utf-8");
+  let js = fs.readFileSync(`./pages/${dirName}/${dirName}-script.js`, "utf-8");
   let matrixRain = fs.readFileSync(`./pages/javascript/matrixRain.js`);
   html = html.replace("#$#THIS-WILL-BE-REPLACED-WITH-STYLE-CONTENT#$#", css);
   html = html.replace("#$#THIS-WILL-BE-REPLACED-WITH-JS-CONTENT#$#", js);
@@ -28,6 +28,12 @@ site.get("/api", (req, res) => {
   res.send("future api endpoint");
 });
 
+site.get("/practice", (req, res) => {
+  res.setHeader("Content-Type", "text/html");
+  const html = getPage("practice");
+  res.send(html);
+});
+
 site.post("/api", (req, res) => {
   if (!req.body.enabledTests || !req.body.tabs) {
     res.status(400);
@@ -38,7 +44,7 @@ site.post("/api", (req, res) => {
   console.log(req.body)
   runner.run();
   console.log(runner.output)
-  console.log(runner.output[0].indentTest)
+  console.log(runner.output.testOutput[0].indentTest)
   res.json(runner.output);
 });
 
